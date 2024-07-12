@@ -83,7 +83,7 @@ contract NFTMarketTest is Test {
         // 测试事件 NewOrder
         // event NewOrder(address seller, uint256 tokenId, uint256 price);
         vm.expectEmit(true, true, true, true);
-        emit NewOrder(address(nftmarket), 0, 1e18);
+        emit NewOrder(owner, 0, 1e18);
 
         nftmarket.listNFT(0, 1e18);
         assertEq(nftmarket.isListed(0), true);
@@ -211,24 +211,23 @@ contract NFTMarketTest is Test {
             owner,
             address(nftmarket),
             1,
-            // abi.encode(500000000000000)
-            // abi.encode(500000000000000)
-            // abi.encode(500000000000000)
-            // "0x1c6bf52634000"
-            "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
+            abi.encode(1e18)
+            // "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
         );
         assertEq(nftmarket.isListed(1), true);
         // 给买家转账 10e18
         mytoken.transfer(buyer, 10e18);
         assertEq(mytoken.balanceOf(buyer), 10e18);
+
         vm.stopPrank();
 
         vm.startPrank(buyer);
+
         // transferAndcall 购买NFT
         mytoken.transferAndcall(
             address(nftmarket),
-            500000000000000,
-            // 1e18,
+            // 500000000000000,
+            1e18,
             abi.encode(1)
 
             // "0x0000000000000000000000000000000000000000000000000000000000000001"
@@ -279,7 +278,6 @@ contract NFTMarketTest is Test {
 
         // 购买
         vm.startPrank(newbuyer);
-
         mytoken.approve(address(nftmarket), 1e18);
         assertEq(
             mytoken.allowance(newbuyer, address(nftmarket)),
@@ -287,13 +285,14 @@ contract NFTMarketTest is Test {
             "buyer token allowance is not 1e18"
         );
         vm.expectEmit(true, true, true, true);
-        emit Deal(address(nftmarket), newbuyer, 0, 1e18);
+        emit Deal(owner, newbuyer, 0, 1e18);
 
         nftmarket.buyNFT(0);
         assertEq(mynft.ownerOf(0), newbuyer, "nft owner is not buyer");
         vm.stopPrank();
     }
 
+    // 取消订单（上架后取消）：在 NFT 上架但未售出时，卖家可以取消订单，将 NFT 转回自己并删除订单信息
     function testcancelOrder() public {
         vm.startPrank(owner);
         // 授权并上架
@@ -302,12 +301,10 @@ contract NFTMarketTest is Test {
         // NFT的拥有者才有权限上架
         nftmarket.listNFT(0, 1e18);
         assertEq(nftmarket.isListed(0), true, "nft market is not listed");
-        vm.stopPrank();
+        mytoken.transfer(buyer, 10e18);
 
-        vm.startPrank(address(nftmarket));
-        vm.expectRevert("Market: toUint256_outOfBounds");
         nftmarket.cancelOrder(0);
-        // assertEq(nftmarket.isListed(0), false, "nft market is not listed");
+        assertEq(nftmarket.isListed(0), false, "nft market is not listed");
         vm.stopPrank();
     }
 

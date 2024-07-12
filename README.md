@@ -84,4 +84,5 @@ cast --help
 
 ```shell
 ➜ forge test --match-path ./test/NFTMarketTest.sol -vv > NFTMarketHubTest.txt  
+➜ forge test --match-path ./test/NFTMarketTest.sol --show-progress -w  -vvvv
 ```

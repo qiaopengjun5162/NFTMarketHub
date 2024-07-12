@@ -45,14 +45,13 @@ contract NFTMarketTest is Test {
         // 测试事件 NewOrder
         // event NewOrder(address seller, uint256 tokenId, uint256 price);
         vm.expectEmit(true, true, true, true);
-        emit NewOrder(address(nftmarket), 0, 1e18);
+        emit NewOrder(owner, 0, 1e18);
 
         nftmarket.listNFT(0, 1e18);
         assertEq(nftmarket.isListed(0), true);
 
         assertEq(nftmarket.getOrderLength(), 1);
         // 8. 账户1 在 ERC20 合约上调用 transfer 转移 10个 ERC20 token 给 账户2
-
         mytoken.transfer(buyer, 10e18);
         assertEq(mytoken.balanceOf(buyer), 10e18);
         assertEq(mytoken.balanceOf(owner), 90e18);
@@ -62,7 +61,6 @@ contract NFTMarketTest is Test {
         // 购买
         vm.startPrank(buyer);
         // 9. 账户2 在 ERC20 合约上调用 approve 方法授权 NFTMarket 合约使用1个ERC20token，参数为 NFTMarket 合约地址 和数量 1,000,000,000,000,000,000
-
         mytoken.approve(address(nftmarket), 1e18);
         assertEq(
             mytoken.allowance(buyer, address(nftmarket)),
@@ -70,13 +68,14 @@ contract NFTMarketTest is Test {
             "buyer token allowance is not 1e18"
         );
         // 10. 账户2 在 NFTMarket 合约上调用 buyNFT 购买 tokenId 为 0 的 NFT
-
+        vm.expectEmit(true, true, true, true);
+        emit Deal(owner, buyer, 0, 1e18);
         nftmarket.buyNFT(0);
         assertEq(mynft.ownerOf(0), buyer, "nft owner is not buyer");
         vm.stopPrank();
     }
     // 不可变测试：测试无论如何买卖，NFTMarket合约中都不可能有 Token 持仓
     function invariant_nftmarketTokenBalance() public view {
-        assertEq(mytoken.balanceOf(address(nftmarket)), 0);
+        assertEq(mynft.balanceOf(address(nftmarket)), 0);
     }
 }

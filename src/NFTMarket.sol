@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {Test, console, console2} from "forge-std/Test.sol";
 
 contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
     IERC20 public erc20;
@@ -51,7 +50,6 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
 
         require(erc20.transferFrom(buyer, seller, price), "transfer failed");
         erc721.safeTransferFrom(address(this), buyer, _tokenId);
-        // erc721.safeTransferFrom(seller, buyer, _tokenId);
 
         //  remove order
         removeOrder(_tokenId);
@@ -64,23 +62,7 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         require(seller != address(0), "NFT not listed");
         require(price > 0, "price is zero");
         require(seller != buyer, "seller and buyer are the same");
-        console.log("value is: ", value);
-        console.log("price is: ", price);
-        console.log(
-            "price111 is: ",
-            abi.decode(
-                "0x0000000000000000000000000000000000000000000000000001c6bf52634000",
-                (uint256)
-            )
-        );
-
         require(value >= price, "Insufficient payment");
-
-        // 转移 ERC20 代币
-        require(
-            erc20.transferFrom(buyer, seller, price),
-            "Token transfer failed"
-        );
 
         // 如果支付金额超过价格，退回多余的代币
         if (value > price) {
@@ -89,15 +71,21 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
                 "transfer price failed"
             );
         }
+
+        // 转移 ERC20 代币
+        require(erc20.transfer(seller, price), "Token transfer failed");
+
         // 转移 NFT
         erc721.safeTransferFrom(address(this), buyer, _tokenId);
         removeOrder(_tokenId);
         emit Deal(seller, buyer, _tokenId, price);
     }
 
+    // 上架后取消订单
     function cancelOrder(uint256 _tokenId) external {
         address seller = orderOfId[_tokenId].seller;
         require(seller == msg.sender, "not the seller");
+        // 将NFT转回卖家
         erc721.safeTransferFrom(address(this), seller, _tokenId);
         //  remove order
         removeOrder(_tokenId);
@@ -134,7 +122,6 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         );
 
         uint256 price = toUint256(data, 0);
-        // uint256 price = abi.decode(abi.encodePacked(decodedData), (uint256));
         // uint256 price = abi.decode(data, (uint256));
 
         require(price > 0, "price is zero");
@@ -198,7 +185,7 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
     }
 
     function listNFT(uint256 _tokenId, uint256 _price) external {
-        // 检查NFT
+        // 检查NFT是否属于调用者
         require(
             erc721.ownerOf(_tokenId) == msg.sender,
             "NFT is not owned by sender"
@@ -208,17 +195,17 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         // 检查 _tokenId 是否已被列出。如果已被列出，则抛出错误信息 "NFT already listed" 并中止交易。
         require(isListed(_tokenId) == false, "NFT already listed");
 
-        // 将新的订单信息（包括市场合约地址、_tokenId 和 _price）添加到 orders 数组中。
-        orders.push(Order(address(this), _tokenId, _price));
-        // 将订单信息（包括市场合约地址、_tokenId 和 _price）存储在 orderOfId 映射中，以 _tokenId 为键。
-        orderOfId[_tokenId] = Order(address(this), _tokenId, _price);
+        // 将订单信息添加到 orders 数组中
+        orders.push(Order(msg.sender, _tokenId, _price));
+        // 将订单信息存储在 orderOfId 映射中，以 _tokenId 为键。
+        orderOfId[_tokenId] = Order(msg.sender, _tokenId, _price);
         // 将订单索引存储在 idToOrderIndex 映射中，以 _tokenId 为键，值为订单在 orders 数组中的索引（orders.length - 1）。
         idToOrderIndex[_tokenId] = orders.length - 1;
 
         // 发送 NFT 给 market contract
         erc721.transferFrom(msg.sender, address(this), _tokenId);
-        // 触发 NewOrder 事件，记录市场合约地址、_tokenId 和 _price，以便监听合约事件的用户或应用程序能够知道新的订单已经被创建。
-        emit NewOrder(address(this), _tokenId, _price);
+        // 触发 NewOrder 事件
+        emit NewOrder(msg.sender, _tokenId, _price);
     }
 
     function onTransferReceived(
@@ -229,8 +216,8 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
     ) external override returns (bytes4) {
         require(msg.sender == address(erc20), "Invalid token contract");
 
-        uint256 tokenId = abi.decode(data, (uint256));
-        // uint256 tokenId = toUint256(data, 0);
+        // uint256 tokenId = abi.decode(data, (uint256));
+        uint256 tokenId = toUint256(data, 0);
         _buyNFT(from, tokenId, value);
 
         return this.onTransferReceived.selector;

@@ -1,23 +1,46 @@
 No files changed, compilation skipped
 
+Ran 1 test for test/MyERC721TokenTest.sol:MyERC721TokenTest
+[PASS] testMint() (gas: 159983)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 1.41ms (171.17µs CPU time)
+
+Ran 7 tests for test/MyERC20TokenTest.sol:MyERC20TokenTest
+[PASS] testApprove() (gas: 39343)
+[PASS] testBalanceOf() (gas: 29716)
+[PASS] testDecimals() (gas: 8423)
+[PASS] testMint() (gas: 57884)
+[PASS] testName() (gas: 12497)
+[PASS] testSymbol() (gas: 12605)
+[PASS] testTransfer() (gas: 33540)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 1.77ms (1.25ms CPU time)
+
+Ran 2 tests for test/Counter.t.sol:CounterTest
+[PASS] testFuzz_SetNumber(uint256) (runs: 259, μ: 31923, ~: 32385)
+[PASS] test_Increment() (gas: 31874)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 6.26ms (5.54ms CPU time)
+
+Ran 1 test for test/NFTMarketInvariantTest.sol:NFTMarketTest
+[PASS] invariant_nftmarketTokenBalance() (runs: 256, calls: 128000, reverts: 113618)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 2.20s (2.20s CPU time)
+
 Ran 17 tests for test/NFTMarketTest.sol:NFTMarketTest
-[PASS] invariant_nftmarketTokenBalance() (runs: 256, calls: 128000, reverts: 128000)
-[PASS] testApprove() (gas: 39128)
-[PASS] testBuyNFT() (gas: 280780)
+[PASS] invariant_nftmarketTokenBalance() (runs: 256, calls: 128000, reverts: 113321)
+[PASS] testApprove() (gas: 39194)
+[PASS] testBuyNFT() (gas: 261778)
 [PASS] testBuyNFTFail() (gas: 15785)
-[PASS] testBuyNFTSuccess() (gas: 407931)
+[PASS] testBuyNFTSuccess() (gas: 384271)
 [PASS] testFailListNFT() (gas: 143056)
 [PASS] testFuzzListNFT(uint256) (runs: 257, μ: 208438, ~: 208438)
-[PASS] testFuzzRandomAddressBuyNFT() (gas: 283646)
+[PASS] testFuzzRandomAddressBuyNFT() (gas: 264624)
 [PASS] testIsListed() (gas: 207999)
 [PASS] testListNFT() (gas: 213183)
-[PASS] testListNFTSuccess() (gas: 184751)
+[PASS] testListNFTSuccess() (gas: 184651)
 [PASS] testNFTBalance() (gas: 19330)
 [PASS] testSetApprovalForAll() (gas: 39081)
 [PASS] testTokenBalance() (gas: 25268)
-[PASS] testTransferToken() (gas: 50928)
-[PASS] testTransferTokenToBuyer() (gas: 50455)
-[PASS] testcancelOrder() (gas: 235674)
-Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 1.80s (1.82s CPU time)
+[PASS] testTransferToken() (gas: 50994)
+[PASS] testTransferTokenToBuyer() (gas: 50521)
+[PASS] testcancelOrder() (gas: 206253)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 2.22s (2.24s CPU time)
 
-Ran 1 test suite in 1.80s (1.80s CPU time): 17 tests passed, 0 failed, 0 skipped (17 total tests)
+Ran 5 test suites in 2.22s (4.43s CPU time): 28 tests passed, 0 failed, 0 skipped (28 total tests)
