@@ -81,3 +81,7 @@ cast --help
 8. 账户2 在 ERC20 合约上调用 approve 方法授权 NFTMarket 合约使用1个ERC20token，参数为 NFTMarket 合约地址 和数量 1,000,000,000,000,000,000
 9. 账户2 在 NFTMarket 合约上调用 buyNFT 购买 tokenId 为 0 的 NFT
 10. 查看账户1 和账户2 的 ERC20 和 ERC721 余额 （balanceOf）
+
+```shell
+➜ forge test --match-path ./test/NFTMarketTest.sol -vv > NFTMarketHubTest.txt  
+```

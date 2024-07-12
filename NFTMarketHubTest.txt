@@ -1,0 +1,23 @@
+No files changed, compilation skipped
+
+Ran 17 tests for test/NFTMarketTest.sol:NFTMarketTest
+[PASS] invariant_nftmarketTokenBalance() (runs: 256, calls: 128000, reverts: 128000)
+[PASS] testApprove() (gas: 39128)
+[PASS] testBuyNFT() (gas: 280780)
+[PASS] testBuyNFTFail() (gas: 15785)
+[PASS] testBuyNFTSuccess() (gas: 407931)
+[PASS] testFailListNFT() (gas: 143056)
+[PASS] testFuzzListNFT(uint256) (runs: 257, μ: 208438, ~: 208438)
+[PASS] testFuzzRandomAddressBuyNFT() (gas: 283646)
+[PASS] testIsListed() (gas: 207999)
+[PASS] testListNFT() (gas: 213183)
+[PASS] testListNFTSuccess() (gas: 184751)
+[PASS] testNFTBalance() (gas: 19330)
+[PASS] testSetApprovalForAll() (gas: 39081)
+[PASS] testTokenBalance() (gas: 25268)
+[PASS] testTransferToken() (gas: 50928)
+[PASS] testTransferTokenToBuyer() (gas: 50455)
+[PASS] testcancelOrder() (gas: 235674)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 1.80s (1.82s CPU time)
+
+Ran 1 test suite in 1.80s (1.80s CPU time): 17 tests passed, 0 failed, 0 skipped (17 total tests)

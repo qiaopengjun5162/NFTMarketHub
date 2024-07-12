@@ -120,7 +120,7 @@ contract NFTMarketTest is Test {
         assertEq(mytoken.allowance(buyer, address(nftmarket)), 1e18);
     }
 
-    // 9. 账户2 在 NFTMarket 合约上调用 buyNFT 购买 tokenId 为 0 的 NFT
+    // 10. 账户2 在 NFTMarket 合约上调用 buyNFT 购买 tokenId 为 0 的 NFT
     function testBuyNFT() public {
         // 查询NFT
         vm.startPrank(owner);
@@ -165,6 +165,7 @@ contract NFTMarketTest is Test {
         vm.stopPrank();
     }
 
+    // 测试上架成功
     function testListNFTSuccess() public {
         vm.startPrank(owner);
         // 判断NFT
@@ -196,6 +197,7 @@ contract NFTMarketTest is Test {
         // 判断NFT
         assertEq(mynft.balanceOf(owner), 1, "owner nft balance is not 1");
         assertEq(mynft.ownerOf(0), owner, "owner nft is not owner");
+        // safeMint NFT
         mynft.safeMint(
             owner,
             "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8"
@@ -210,24 +212,28 @@ contract NFTMarketTest is Test {
             address(nftmarket),
             1,
             // abi.encode(500000000000000)
-            // abi.encode(1e18)
+            // abi.encode(500000000000000)
+            // abi.encode(500000000000000)
+            // "0x1c6bf52634000"
             "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
         );
         assertEq(nftmarket.isListed(1), true);
-
+        // 给买家转账 10e18
         mytoken.transfer(buyer, 10e18);
         assertEq(mytoken.balanceOf(buyer), 10e18);
         vm.stopPrank();
 
         vm.startPrank(buyer);
         // transferAndcall 购买NFT
-        // mytoken.transferAndcall(
-        //     address(nftmarket),
-        //     500000000000000,
-        //     // 1e18,
-        //     abi.encode(1)
-        // );
-        // assertEq(mynft.ownerOf(1), buyer, "nft owner is not buyer");
+        mytoken.transferAndcall(
+            address(nftmarket),
+            500000000000000,
+            // 1e18,
+            abi.encode(1)
+
+            // "0x0000000000000000000000000000000000000000000000000000000000000001"
+        );
+        assertEq(mynft.ownerOf(1), buyer, "nft owner is not buyer");
         vm.stopPrank();
     }
 
@@ -306,7 +312,7 @@ contract NFTMarketTest is Test {
     }
 
     // 不可变测试：测试无论如何买卖，NFTMarket合约中都不可能有 Token 持仓
-    function invariant_nftmarketTokenBalance() public {
+    function invariant_nftmarketTokenBalance() public view {
         assertEq(mytoken.balanceOf(address(nftmarket)), 0);
     }
 }

@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {Test, console, console2} from "forge-std/Test.sol";
 
 contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
     IERC20 public erc20;
@@ -62,6 +63,17 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         address seller = orderOfId[_tokenId].seller;
         require(seller != address(0), "NFT not listed");
         require(price > 0, "price is zero");
+        require(seller != buyer, "seller and buyer are the same");
+        console.log("value is: ", value);
+        console.log("price is: ", price);
+        console.log(
+            "price111 is: ",
+            abi.decode(
+                "0x0000000000000000000000000000000000000000000000000001c6bf52634000",
+                (uint256)
+            )
+        );
+
         require(value >= price, "Insufficient payment");
 
         // 转移 ERC20 代币
@@ -120,7 +132,10 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
             erc721.ownerOf(tokenId) == address(this),
             "not owned by this contract"
         );
+
         uint256 price = toUint256(data, 0);
+        // uint256 price = abi.decode(abi.encodePacked(decodedData), (uint256));
+        // uint256 price = abi.decode(data, (uint256));
 
         require(price > 0, "price is zero");
         // 上架
@@ -215,6 +230,7 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         require(msg.sender == address(erc20), "Invalid token contract");
 
         uint256 tokenId = abi.decode(data, (uint256));
+        // uint256 tokenId = toUint256(data, 0);
         _buyNFT(from, tokenId, value);
 
         return this.onTransferReceived.selector;
