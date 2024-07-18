@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/mocks/EIP712Verifier.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import "forge-std/console2.sol";
 
 contract NFTMarket is
     ERC165,
@@ -19,9 +18,6 @@ contract NFTMarket is
     IERC20 public erc20;
     IERC721 public erc721;
 
-    // address public whitelistSigner;
-
-    // bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
     string private constant SIGNING_DOMAIN = "NFT-Market";
     string private constant SIGNATURE_VERSION = "1";
 
@@ -273,8 +269,7 @@ contract NFTMarket is
             price,
             deadline
         );
-        console2.log(" address(this),: ", address(this));
-        console2.log(" address(erc20),: ", address(erc20));
+
         // 使用 IERC20Permit 的 permit 方法进行代币授权。
         IERC20Permit(address(erc20)).permit(
             buyer,
@@ -320,10 +315,6 @@ contract NFTMarket is
         );
         // 验证签名是否来自于指定的签署者。
         address recoveredSigner = ECDSA.recover(digest, signature);
-        console2.log("buyer: ", _buyer);
-        console2.log("signer: ", signer);
-        console2.log("seller: ", seller);
-        console2.log("recoveredSigner: ", recoveredSigner);
         require(recoveredSigner == signer, "Invalid whitelist signature");
     }
 

@@ -6,7 +6,6 @@ import {NFTMarket} from "../src/NFTMarket.sol";
 import {MyERC20Token} from "../src/MyERC20Token.sol";
 import {MyERC721Token} from "../src/MyERC721Token.sol";
 import {SigUtils} from "../src/SigUtils.sol";
-import "forge-std/console2.sol";
 
 contract NFTMarketTest is Test {
     MyERC20Token public mytoken;
@@ -112,7 +111,8 @@ contract NFTMarketTest is Test {
 
         assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
         nftmarket.permitBuy(tokenId, deadline, v, r, s, signature);
-        // assertEq(mytoken.allowance(buyer, address(nftmarket)), price);
+        assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
+        assertEq(mytoken.balanceOf(buyer), 9e18);
 
         assertEq(mynft.ownerOf(tokenId), buyer, "nft owner is not buyer");
         vm.stopPrank();
