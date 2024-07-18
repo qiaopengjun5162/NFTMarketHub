@@ -6,12 +6,24 @@ import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/mocks/EIP712Verifier.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "forge-std/console2.sol";
 
-contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
+contract NFTMarket is
+    ERC165,
+    IERC721Receiver,
+    IERC1363Receiver,
+    EIP712Verifier
+{
     IERC20 public erc20;
     IERC721 public erc721;
 
-    bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
+    // address public whitelistSigner;
+
+    // bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
+    string private constant SIGNING_DOMAIN = "NFT-Market";
+    string private constant SIGNATURE_VERSION = "1";
 
     struct Order {
         address seller;
@@ -33,11 +45,18 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
     );
     event OrderCancelled(address seller, uint256 tokenId);
 
-    constructor(address _erc20, address _erc721) {
+    constructor(
+        address _erc20,
+        address _erc721
+    )
+        // address _whitelistSigner
+        EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
+    {
         require(_erc20 != address(0), "zero address");
         require(_erc721 != address(0), "zero address");
         erc20 = IERC20(_erc20);
         erc721 = IERC721(_erc721);
+        // whitelistSigner = _whitelistSigner;
     }
 
     function buyNFT(uint256 _tokenId) external {
@@ -47,12 +66,12 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
 
         require(seller != buyer, "seller and buyer are the same");
         require(price > 0, "price is zero");
+        //  remove order
+        removeOrder(_tokenId);
 
         require(erc20.transferFrom(buyer, seller, price), "transfer failed");
         erc721.safeTransferFrom(address(this), buyer, _tokenId);
 
-        //  remove order
-        removeOrder(_tokenId);
         emit Deal(seller, buyer, _tokenId, price);
     }
 
@@ -221,5 +240,94 @@ contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver {
         _buyNFT(from, tokenId, value);
 
         return this.onTransferReceived.selector;
+    }
+
+    function permitBuy(
+        uint256 _tokenId,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s,
+        bytes calldata whitelistSignature
+    ) external {
+        address seller = orderOfId[_tokenId].seller;
+        address buyer = msg.sender;
+        uint256 price = orderOfId[_tokenId].price;
+
+        require(seller != buyer, "seller and buyer are the same");
+        require(price > 0, "price is zero");
+
+        require(block.timestamp <= deadline, "permitBuy expired");
+
+        // 检查白单签名是否来自于项目方的签署
+        // 执行 ERC20 的 permit 进行 授权
+        // 执行 ERC20 的转账
+        // 执行 NFT  的转账
+        // 验证白名单签名，确保调用者是经过授权的白名单用户。
+        verify(
+            whitelistSignature,
+            seller,
+            seller,
+            buyer,
+            _tokenId,
+            price,
+            deadline
+        );
+        console2.log(" address(this),: ", address(this));
+        console2.log(" address(erc20),: ", address(erc20));
+        // 使用 IERC20Permit 的 permit 方法进行代币授权。
+        IERC20Permit(address(erc20)).permit(
+            buyer,
+            address(this),
+            price,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        // remove order
+        removeOrder(_tokenId);
+        // 完成代币转账和 NFT 转移。
+        require(erc20.transferFrom(buyer, seller, price), "transfer failed");
+        erc721.safeTransferFrom(address(this), buyer, _tokenId);
+
+        emit Deal(seller, buyer, _tokenId, price);
+    }
+
+    function verify(
+        bytes memory signature,
+        address signer,
+        address seller,
+        address _buyer,
+        uint256 _tokenId,
+        uint256 _price,
+        uint256 _deadline
+    ) internal view {
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    keccak256(
+                        "whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)"
+                    ),
+                    seller,
+                    _buyer,
+                    _tokenId,
+                    _price,
+                    _deadline
+                )
+            )
+        );
+        // 验证签名是否来自于指定的签署者。
+        address recoveredSigner = ECDSA.recover(digest, signature);
+        console2.log("buyer: ", _buyer);
+        console2.log("signer: ", signer);
+        console2.log("seller: ", seller);
+        console2.log("recoveredSigner: ", recoveredSigner);
+        require(recoveredSigner == signer, "Invalid whitelist signature");
+    }
+
+    function DOMAIN_SEPARATOR() external view virtual returns (bytes32) {
+        return _domainSeparatorV4();
     }
 }
