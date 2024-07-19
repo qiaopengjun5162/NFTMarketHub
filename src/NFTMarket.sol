@@ -44,15 +44,11 @@ contract NFTMarket is
     constructor(
         address _erc20,
         address _erc721
-    )
-        // address _whitelistSigner
-        EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
-    {
+    ) EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {
         require(_erc20 != address(0), "zero address");
         require(_erc721 != address(0), "zero address");
         erc20 = IERC20(_erc20);
         erc721 = IERC721(_erc721);
-        // whitelistSigner = _whitelistSigner;
     }
 
     function buyNFT(uint256 _tokenId) external {
@@ -129,6 +125,7 @@ contract NFTMarket is
         uint256 tokenId,
         bytes calldata data
     ) external returns (bytes4) {
+        require(operator == from, " invalid operator");
         require(from != address(0), "zero address");
         require(msg.sender == address(erc721), "invalid sender");
         require(

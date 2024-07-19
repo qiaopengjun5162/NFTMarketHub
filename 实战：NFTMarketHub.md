@@ -456,6 +456,195 @@ https://sepolia.etherscan.io/address/0xab9bbafd906977ec7c24f7a04a84e26d60db0221#
 
 
 
+### 为NFTMarket增加`PermitBuy` 方法后再次部署
+
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+import {Script, console} from "forge-std/Script.sol";
+import {NFTMarket} from "../src/NFTMarket.sol";
+
+contract NFTMarketScript is Script {
+    NFTMarket public nftmarket;
+    address public mytokenAddress;
+    address public my721tokenAddress;
+
+    function setUp() public {
+        // 设置已部署的合约地址
+        mytokenAddress = 0xd557Bf08136D90ed553b882Eb365e0F6b9728bB1;
+        my721tokenAddress = 0xC39B0eE94143C457449e16829837FD59d722933C;
+    }
+
+    function run() public {
+        vm.startBroadcast();
+
+        // 部署 NFTMarket 合约，传入已部署的 mytoken 和 my721token 地址
+        nftmarket = new NFTMarket(mytokenAddress, my721tokenAddress);
+        // 使用 console.log 打印合约地址
+        console.log("NFTMarket deployed to:", address(nftmarket));
+
+        vm.stopBroadcast();
+    }
+}
+
+```
+
+部署
+
+```shell
+
+NFTMarketHub on  main [!] via ⬢ v22.1.0 via 🅒 base took 3.4s 
+➜ source .env
+
+NFTMarketHub on  main [!] via ⬢ v22.1.0 via 🅒 base 
+➜ forge script --chain sepolia script/NFTMarket.s.sol:NFTMarketScript --rpc-url $SEPOLIA_RPC_URL --broadcast --account MetaMask --verify -vvvv
+
+[⠊] Compiling...
+[⠊] Compiling 3 files with Solc 0.8.20
+[⠒] Solc 0.8.20 finished in 1.93s
+Compiler run successful!
+Enter keystore password:
+Traces:
+  [2043633] NFTMarketScript::run()
+    ├─ [0] VM::startBroadcast()
+    │   └─ ← [Return] 
+    ├─ [1992986] → new NFTMarket@0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f
+    │   └─ ← [Return] 9725 bytes of code
+    ├─ [0] console::log("NFTMarket deployed to:", NFTMarket: [0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  NFTMarket deployed to: 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [1992986] → new NFTMarket@0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f
+    └─ ← [Return] 9725 bytes of code
+
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 26.370614208 gwei
+
+Estimated total gas used for script: 2880891
+
+Estimated amount required: 0.075970865136299328 ETH
+
+==========================
+
+##### sepolia
+✅  [Success]Hash: 0x8438578450ffa07e4c8f221535ea4951909483dc50983cd0c62f7d4ceddcbcac
+Contract Address: 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f
+Block: 6337744
+Paid: 0.031346262499763324 ETH (2216762 gas * 14.140562902 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.031346262499763324 ETH (2216762 gas * avg 14.140562902 gwei)
+                                                                                                          
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f` deployed on sepolia
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f.
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f.
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f.
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0x3A06A90ad3C4FCdE1Ab3fDAC72a9edB5CD14677f.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `bhfxcbiwflxy5mu7sbal5vdpu1wnmgj1vdayjj98jbfyzmd8w5`
+        URL: https://sepolia.etherscan.io/address/0x3a06a90ad3c4fcde1ab3fdac72a9edb5cd14677f
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/broadcast/NFTMarket.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/cache/NFTMarket.s.sol/11155111/run-latest.json
+
+```
+
+浏览器查看
+
+https://sepolia.etherscan.io/address/0x3a06a90ad3c4fcde1ab3fdac72a9edb5cd14677f
+
+![image-20240719152618723](assets/image-20240719152618723.png)
+
+
+
+## 为NFTMarket创建一个The Graph子图
+
+### 学习资料
+
+- 快速入门： https://thegraph.com/docs/zh/quick-start/
+- 如何编写一个子图的详细介绍 https://thegraph.com/docs/zh/developing/creating-a-subgraph/
+- 如何查询一个子图的详细介绍 https://thegraph.com/docs/zh/querying/querying-from-an-application/
+- 中文相关资源列表： https://www.notion.so/graphprotocolcn/The-Graph-49977afa44644ebf9052b9220f539396
+- The graph bounty中一个比较好的子图的例子： https://github.com/Autosaida/Zircuit-Restaking-Subgraph/
+-  The graph bounty中一个比较好的Usage of Subgraph的例子：https://github.com/ttttonyhe/stader-graph-dashboard
+
+### 步骤
+
+
+
+1. 安装Graph CLI 在本地环境中安装Graph CLI工具
+2. 初始化子图 使用Graph CLI初始化一个新的子图
+3. 配置子图（subgraph.yaml） 设置要索引的NFTMarket合约和List、Buy事件
+4. 定义Schema（schema.graphql） 定义List和Buy实体
+5. 编写映射（mapping.ts） 编写映射逻辑，以处理合约事件并更新子图的存储
+6. 部署子图 使用Graph CLI工具部署子图到The Graph Studio。
+
+### 实操
+
+#### 1 创建子图
+
+![image-20240719152946198](assets/image-20240719152946198.png)
+
+#### 2 填写子图名称
+
+![image-20240719153052059](assets/image-20240719153052059.png)
+
+#### 3 填写描述信息和源码链接（注意：描述信息必填否则不能保存）
+
+![image-20240719153315148](assets/image-20240719153315148.png)
+
+#### 4 点击 Save 后即可根据右方的命令去执行对应的操作
+
+![image-20240719153716869](assets/image-20240719153716869.png)
+
+#### 5 安装  GRAPH CLI
+
+```shell
+pnpm install -g @graphprotocol/graph-cli
+```
+
+#### 6 初始化子图
+
+```shell
+graph init --studio nftmarkethub
+```
+
 
 
 ## 参考
