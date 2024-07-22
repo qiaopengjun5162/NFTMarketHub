@@ -909,6 +909,20 @@ https://sepolia.etherscan.io/address/0xbba4229cd53442d56e306379e99332687e1fb31f#
 
 ![image-20240722225526502](assets/image-20240722225526502.png)
 
+
+
+
+
+![image-20240722233519171](assets/image-20240722233519171.png)
+
+
+
+
+
+
+
+![image-20240722233551393](assets/image-20240722233551393.png)
+
 ## 为NFTMarket创建一个The Graph子图
 
 ### 学习资料
