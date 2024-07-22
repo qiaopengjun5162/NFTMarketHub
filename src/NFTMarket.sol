@@ -20,12 +20,33 @@ contract NFTMarket is
 
     string private constant SIGNING_DOMAIN = "NFT-Market";
     string private constant SIGNATURE_VERSION = "1";
+    bytes32 private constant _LIMIT_ORDER_TYPE_HASH =
+        keccak256(
+            "LimitOrder(address maker,address nft,uint256 tokenId,address payToken,uint256 price,uint256 deadline)"
+        );
+    bytes32 private constant _WHITE_LIST_TYPE_HASH =
+        keccak256(
+            "whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)"
+        );
 
     struct Order {
         address seller;
         uint256 tokenId;
         uint256 price;
     }
+
+    struct LimitOrder {
+        address maker;
+        address nft;
+        uint256 tokenId;
+        address payToken;
+        uint256 price;
+        uint256 deadline;
+        address seller;
+        bytes signature;
+    }
+
+    mapping(bytes32 => bool) public orderMatched;
 
     mapping(uint256 => Order) public orderOfId; // token id to order
     Order[] public orders;
@@ -236,21 +257,21 @@ contract NFTMarket is
     }
 
     function permitBuy(
-        uint256 _tokenId,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s,
+        LimitOrder memory order,
+        bytes memory permit2612Signature,
         bytes calldata whitelistSignature
     ) external {
-        address seller = orderOfId[_tokenId].seller;
+        address seller = orderOfId[order.tokenId].seller;
         address buyer = msg.sender;
-        uint256 price = orderOfId[_tokenId].price;
-
+        uint256 price = orderOfId[order.tokenId].price;
         require(seller != buyer, "seller and buyer are the same");
         require(price > 0, "price is zero");
 
-        require(block.timestamp <= deadline, "permitBuy expired");
+        require(block.timestamp <= order.deadline, "permitBuy expired");
+        require(
+            permit2612Signature.length == 65,
+            "signature must be 65 bytes long"
+        );
 
         // 检查白单签名是否来自于项目方的签署
         // 执行 ERC20 的 permit 进行 授权
@@ -262,29 +283,44 @@ contract NFTMarket is
             seller,
             seller,
             buyer,
-            _tokenId,
+            order.tokenId,
             price,
-            deadline
+            order.deadline
         );
+
+        _verifySellListingSignature(order);
+
+        // https://github.com/TaylorDurden/hello_foundry/blob/master/src/app/NFTMarketPermit.sol
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        // ecrecover takes the signature parameters, and the only way to get them
+        // currently is to use assembly.
+        /// @solidity memory-safe-assembly
+        assembly {
+            r := mload(add(permit2612Signature, 0x20))
+            s := mload(add(permit2612Signature, 0x40))
+            v := byte(0, mload(add(permit2612Signature, 0x60)))
+        }
 
         // 使用 IERC20Permit 的 permit 方法进行代币授权。
         IERC20Permit(address(erc20)).permit(
             buyer,
             address(this),
             price,
-            deadline,
+            order.deadline,
             v,
             r,
             s
         );
 
         // remove order
-        removeOrder(_tokenId);
+        removeOrder(order.tokenId);
         // 完成代币转账和 NFT 转移。
         require(erc20.transferFrom(buyer, seller, price), "transfer failed");
-        erc721.safeTransferFrom(address(this), buyer, _tokenId);
+        erc721.safeTransferFrom(address(this), buyer, order.tokenId);
 
-        emit Deal(seller, buyer, _tokenId, price);
+        emit Deal(seller, buyer, order.tokenId, price);
     }
 
     function verify(
@@ -317,5 +353,30 @@ contract NFTMarket is
 
     function DOMAIN_SEPARATOR() external view virtual returns (bytes32) {
         return _domainSeparatorV4();
+    }
+
+    function _verifySellListingSignature(LimitOrder memory order) internal {
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    _LIMIT_ORDER_TYPE_HASH,
+                    order.maker,
+                    order.nft,
+                    order.tokenId,
+                    order.payToken,
+                    order.price,
+                    order.deadline
+                )
+            )
+        );
+        // Check if the order has already been matched
+        require(orderMatched[digest] == false, "NFT already matched");
+        orderMatched[digest] = true;
+        // 验证签名是否来自于指定的签署者。
+        address recoveredSigner = ECDSA.recover(digest, order.signature);
+        require(
+            recoveredSigner == order.seller,
+            "Invalid verifySellListingSignature"
+        );
     }
 }

@@ -12,6 +12,11 @@ contract SigUtils {
     bytes32 public constant PERMIT_TYPEHASH =
         0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
 
+    bytes32 private constant _LIMIT_ORDER_TYPE_HASH =
+        keccak256(
+            "LimitOrder(address maker,address nft,uint256 tokenId,address payToken,uint256 price,uint256 deadline)"
+        );
+
     struct Permit {
         address owner;
         address spender;
@@ -24,6 +29,15 @@ contract SigUtils {
         address seller;
         address buyer;
         uint256 tokenId;
+        uint256 price;
+        uint256 deadline;
+    }
+
+    struct PermitLimitOrder {
+        address maker;
+        address nft;
+        uint256 tokenId;
+        address payToken;
         uint256 price;
         uint256 deadline;
     }
@@ -63,6 +77,23 @@ contract SigUtils {
             );
     }
 
+    function getPermitLimitOrderStructHash(
+        PermitLimitOrder memory _PermitLimitOrder
+    ) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    _LIMIT_ORDER_TYPE_HASH,
+                    _PermitLimitOrder.maker,
+                    _PermitLimitOrder.nft,
+                    _PermitLimitOrder.tokenId,
+                    _PermitLimitOrder.payToken,
+                    _PermitLimitOrder.price,
+                    _PermitLimitOrder.deadline
+                )
+            );
+    }
+
     // computes the hash of the fully encoded EIP-712 message for the domain, which can be used to recover the signer
     function getTypedDataHash(
         Permit memory _permit
@@ -86,6 +117,19 @@ contract SigUtils {
                     "\x19\x01",
                     DOMAIN_SEPARATOR,
                     getPermitBuyStructHash(_PermitBuy)
+                )
+            );
+    }
+
+    function getPermitLimitOrderTypedDataHash(
+        PermitLimitOrder memory _PermitLimitOrder
+    ) public view returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01",
+                    DOMAIN_SEPARATOR,
+                    getPermitLimitOrderStructHash(_PermitLimitOrder)
                 )
             );
     }

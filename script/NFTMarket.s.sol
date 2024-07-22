@@ -11,8 +11,8 @@ contract NFTMarketScript is Script {
 
     function setUp() public {
         // 设置已部署的合约地址
-        mytokenAddress = 0xd557Bf08136D90ed553b882Eb365e0F6b9728bB1;
-        my721tokenAddress = 0xC39B0eE94143C457449e16829837FD59d722933C;
+        mytokenAddress = 0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa;
+        my721tokenAddress = 0x7eA36391c7127A7f40E5c23212A8016d6E494546;
     }
 
     function run() public {

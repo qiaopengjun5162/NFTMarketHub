@@ -20,7 +20,7 @@ contract NFTMarketTest is Test {
     address internal owner;
     address internal buyer;
 
-    uint256 public deadline = block.timestamp + 1 days;
+    uint256 public deadline = block.timestamp + 2 days;
     uint256 public tokenId = 0;
     uint256 internal price = 1e18;
     uint256 internal nonce = 0;
@@ -59,6 +59,44 @@ contract NFTMarketTest is Test {
 
     function test_PermitBuy() public {
         // 1. 上架
+        _listNFTMarket();
+
+        // 2. 购买
+        vm.startPrank(buyer);
+
+        // 3. ERC20 permit
+        bytes memory permitSignature = _getEIP2612Signature();
+
+        // 4. 白名单授权
+        bytes memory whiteListSignature = _getWhiteListSignature();
+
+        // 5. 上架签名
+        bytes memory sellListingSignature = _getSellListingSignature();
+
+        assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
+        nftmarket.permitBuy(
+            NFTMarket.LimitOrder(
+                address(nftmarket),
+                address(mynft),
+                tokenId,
+                address(mytoken),
+                price,
+                deadline,
+                owner,
+                sellListingSignature
+            ),
+            permitSignature,
+            whiteListSignature
+        );
+        assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
+        assertEq(mytoken.balanceOf(buyer), 9e18);
+
+        assertEq(mynft.ownerOf(tokenId), buyer, "nft owner is not buyer");
+        vm.stopPrank();
+    }
+
+    function _listNFTMarket() private {
+        // 1. 上架
         vm.startPrank(owner);
         // 判断NFT
         assertEq(mynft.balanceOf(owner), 1, "owner nft balance is not 1");
@@ -73,11 +111,9 @@ contract NFTMarketTest is Test {
         mytoken.transfer(buyer, 10e18);
         assertEq(mytoken.balanceOf(buyer), 10e18);
         vm.stopPrank();
+    }
 
-        vm.startPrank(buyer);
-        // 2. 购买
-
-        // 3. ERC20 permit
+    function _getEIP2612Signature() private view returns (bytes memory) {
         SigUtils.Permit memory permit = SigUtils.Permit({
             owner: buyer,
             spender: address(nftmarket),
@@ -89,8 +125,11 @@ contract NFTMarketTest is Test {
         bytes32 digest = mytoken_sigUtils.getTypedDataHash(permit);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(buyerPrivateKey, digest);
+        bytes memory permitSignature = abi.encodePacked(r, s, v);
+        return permitSignature;
+    }
 
-        // 4. 白名单授权
+    function _getWhiteListSignature() private view returns (bytes memory) {
         SigUtils.PermitBuy memory PermitBuy = SigUtils.PermitBuy({
             seller: owner,
             buyer: buyer,
@@ -107,14 +146,30 @@ contract NFTMarketTest is Test {
             ownerPrivateKey,
             digest_whitelist
         );
-        bytes memory signature = abi.encodePacked(r1, s1, v1);
+        bytes memory whitelistSignature = abi.encodePacked(r1, s1, v1);
+        return whitelistSignature;
+    }
 
-        assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
-        nftmarket.permitBuy(tokenId, deadline, v, r, s, signature);
-        assertEq(mytoken.allowance(buyer, address(nftmarket)), 0);
-        assertEq(mytoken.balanceOf(buyer), 9e18);
+    function _getSellListingSignature() private view returns (bytes memory) {
+        SigUtils.PermitLimitOrder memory PermitLimitOrder = SigUtils
+            .PermitLimitOrder({
+                maker: address(nftmarket),
+                nft: address(mynft),
+                tokenId: tokenId,
+                payToken: address(mytoken),
+                price: price,
+                deadline: deadline
+            });
 
-        assertEq(mynft.ownerOf(tokenId), buyer, "nft owner is not buyer");
-        vm.stopPrank();
+        bytes32 digest_list = sigUtils.getPermitLimitOrderTypedDataHash(
+            PermitLimitOrder
+        );
+
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(
+            ownerPrivateKey,
+            digest_list
+        );
+        bytes memory sellListingSignature = abi.encodePacked(r2, s2, v2);
+        return sellListingSignature;
     }
 }

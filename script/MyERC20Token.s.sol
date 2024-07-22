@@ -10,9 +10,12 @@ contract MyERC20TokenScript is Script {
     function setUp() public {}
 
     function run() public {
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address deployerAccountAddress = vm.envAddress("ACCOUNT_ADDRESS");
+        vm.startBroadcast(deployerPrivateKey);
 
-        mytoken = new MyERC20Token(msg.sender);
+        mytoken = new MyERC20Token(deployerAccountAddress);
+        console.log("deployerAccountAddress :", deployerAccountAddress);
         console.log("MyERC20Token deployed to:", address(mytoken));
 
         vm.stopBroadcast();

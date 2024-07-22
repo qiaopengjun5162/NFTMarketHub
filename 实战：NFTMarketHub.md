@@ -141,7 +141,128 @@ https://sepolia.etherscan.io/address/0xd557bf08136d90ed553b882eb365e0f6b9728bb1
 
 ![image-20240717184431297](assets/image-20240717184431297.png)
 
+部署问题修改
 
+```shell
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base took 1m 26.6s 
+➜ source .env                                                                                                          
+
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base 
+➜ forge script --chain sepolia MyERC20TokenScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv                 
+[⠊] Compiling...
+[⠔] Compiling 1 files with Solc 0.8.20
+[⠒] Solc 0.8.20 finished in 1.44s
+Compiler run successful!
+Traces:
+  [2355225] → new MyERC20TokenScript@0x5b73C5498c1E3b4dbA84de0F1833c4a029d90519
+    └─ ← [Return] 11653 bytes of code
+
+  [98] MyERC20TokenScript::setUp()
+    └─ ← [Stop] 
+
+  [2950] MyERC20TokenScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Revert] failed parsing $PRIVATE_KEY as type `uint256`: missing hex prefix ("0x") for hex string
+    └─ ← [Revert] failed parsing $PRIVATE_KEY as type `uint256`: missing hex prefix ("0x") for hex string
+
+
+Error: 
+script failed: failed parsing $PRIVATE_KEY as type `uint256`: missing hex prefix ("0x") for hex string
+
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base took 11.7s 
+➜ forge script --chain sepolia MyERC20TokenScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv  
+
+[⠊] Compiling...
+No files changed, compilation skipped
+Traces:
+  [1929276] MyERC20TokenScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::envAddress("ACCOUNT_ADDRESS") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::startBroadcast(<pk>)
+    │   └─ ← [Return] 
+    ├─ [1881633] → new MyERC20Token@0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa
+    │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5)
+    │   └─ ← [Return] 9047 bytes of code
+    ├─ [0] console::log("deployerAccountAddress :", 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("MyERC20Token deployed to:", MyERC20Token: [0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  deployerAccountAddress : 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5
+  MyERC20Token deployed to: 0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [1881633] → new MyERC20Token@0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa
+    ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5)
+    └─ ← [Return] 9047 bytes of code
+
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 31.484721969 gwei
+
+Estimated total gas used for script: 2722903
+
+Estimated amount required: 0.085729843903556007 ETH
+
+==========================
+
+##### sepolia
+✅  [Success]Hash: 0x6981a969928123236332cf8a1ccab58c202ccb1e056d4f99daca8d2b881749f0
+Contract Address: 0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa
+Block: 6355495
+Paid: 0.032185872758241342 ETH (2095191 gas * 15.361784562 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.032185872758241342 ETH (2095191 gas * avg 15.361784562 gwei)
+                                                                                                                         
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa` deployed on sepolia
+
+Submitting verification for [src/MyERC20Token.sol:MyERC20Token] 0xc32cE2198B123D1c1F7FD3A9f54Bff9f975819Fa.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `nrfj275cavnnxjapk9jy8xl7qudvynqn7vkashvfkv2kkfzws7`
+        URL: https://sepolia.etherscan.io/address/0xc32ce2198b123d1c1f7fd3a9f54bff9f975819fa
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/broadcast/MyERC20Token.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/cache/MyERC20Token.s.sol/11155111/run-latest.json
+
+
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base took 48.0s 
+➜ 
+```
+
+https://sepolia.etherscan.io/address/0xc32ce2198b123d1c1f7fd3a9f54bff9f975819fa#code
+
+![image-20240722175318903](assets/image-20240722175318903.png)
 
 ## MyERC721Token
 
@@ -272,7 +393,109 @@ https://sepolia.etherscan.io/address/0xc39b0ee94143c457449e16829837fd59d722933c
 
 ![image-20240717185002327](assets/image-20240717185002327.png)
 
+### 部署问题修改
 
+```shell
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base 
+➜ source .env
+
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base 
+➜ forge script --chain sepolia MyERC721TokenScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv  
+
+[⠊] Compiling...
+[⠔] Compiling 1 files with Solc 0.8.20
+[⠒] Solc 0.8.20 finished in 1.46s
+Compiler run successful!
+Traces:
+  [2120084] MyERC721TokenScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::envAddress("ACCOUNT_ADDRESS") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::startBroadcast(<pk>)
+    │   └─ ← [Return] 
+    ├─ [2072840] → new MyERC721Token@0x7eA36391c7127A7f40E5c23212A8016d6E494546
+    │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5)
+    │   └─ ← [Return] 10002 bytes of code
+    ├─ [0] console::log("MyERC721Token deployed to:", MyERC721Token: [0x7eA36391c7127A7f40E5c23212A8016d6E494546]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  MyERC721Token deployed to: 0x7eA36391c7127A7f40E5c23212A8016d6E494546
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [2072840] → new MyERC721Token@0x7eA36391c7127A7f40E5c23212A8016d6E494546
+    ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: 0x750Ea21c1e98CcED0d4557196B6f4a5974CCB6f5)
+    └─ ← [Return] 10002 bytes of code
+
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 53.318074191 gwei
+
+Estimated total gas used for script: 2990587
+
+Estimated amount required: 0.159452339540640117 ETH
+
+==========================
+
+##### sepolia
+✅  [Success]Hash: 0x77190a6bbe59f4b98dc06b1219ca34fcf5cc1ace40f6998bb26568fcb93e5380
+Contract Address: 0x7eA36391c7127A7f40E5c23212A8016d6E494546
+Block: 6355525
+Paid: 0.057633696474121704 ETH (2301162 gas * 25.045475492 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.057633696474121704 ETH (2301162 gas * avg 25.045475492 gwei)
+                                                                                                                         
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0x7eA36391c7127A7f40E5c23212A8016d6E494546` deployed on sepolia
+
+Submitting verification for [src/MyERC721Token.sol:MyERC721Token] 0x7eA36391c7127A7f40E5c23212A8016d6E494546.
+
+Submitting verification for [src/MyERC721Token.sol:MyERC721Token] 0x7eA36391c7127A7f40E5c23212A8016d6E494546.
+
+Submitting verification for [src/MyERC721Token.sol:MyERC721Token] 0x7eA36391c7127A7f40E5c23212A8016d6E494546.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `bgjivlpsttkmre2wq8etbj9gbv6txntfhwwe3rnh3zzduq12pm`
+        URL: https://sepolia.etherscan.io/address/0x7ea36391c7127a7f40e5c23212a8016d6e494546
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/broadcast/MyERC721Token.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/cache/MyERC721Token.s.sol/11155111/run-latest.json
+
+
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base took 1m 27.4s 
+➜ 
+```
+
+https://sepolia.etherscan.io/address/0x7ea36391c7127a7f40e5c23212a8016d6e494546#code
+
+![image-20240722175829014](assets/image-20240722175829014.png)
 
 ### NFTMarket
 
