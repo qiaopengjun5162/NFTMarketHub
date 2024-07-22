@@ -645,6 +645,68 @@ pnpm install -g @graphprotocol/graph-cli
 graph init --studio nftmarkethub
 ```
 
+![image-20240719155025236](assets/image-20240719155025236.png)
+
+#### 7 认证
+
+```shell
+graph auth --studio c982cd704d2e5525feae40467e1937db
+```
+
+![image-20240719155212470](assets/image-20240719155212470.png)
+
+#### 8 切换目录
+
+```shell
+cd nftmarkethub
+```
+
+![image-20240719155321324](assets/image-20240719155321324.png)
+
+#### 9 BUILD 子图
+
+```shell
+graph codegen && graph build
+```
+
+![image-20240719155441488](assets/image-20240719155441488.png)
+
+#### 10 部署子图
+
+```shell
+graph deploy --studio nftmarkethub
+```
+
+
+
+失败
+
+![image-20240719161346275](assets/image-20240719161346275.png)
+
+试图查询失败信息
+
+![image-20240720105810386](assets/image-20240720105810386.png)
+
+解决
+
+![image-20240721113552746](assets/image-20240721113552746.png)
+
+https://subgraphs.alchemy.com/onboarding
+
+https://subgraphs.alchemy.com/subgraphs/6888
+
+![image-20240721114437302](assets/image-20240721114437302.png)
+
+https://subgraph.satsuma-prod.com/qiaos-team--238048/nftmarkethub/playground
+
+![image-20240721114500619](assets/image-20240721114500619.png)
+
+
+
+
+
+![image-20240721121801599](assets/image-20240721121801599.png)
+
 
 
 ## 参考
