@@ -814,7 +814,100 @@ https://sepolia.etherscan.io/address/0x3a06a90ad3c4fcde1ab3fdac72a9edb5cd14677f
 
 ![image-20240719152618723](assets/image-20240719152618723.png)
 
+部署问题修改
 
+```shell
+NFTMarketHub on  main [!?] via ⬢ v22.1.0 via 🅒 base took 18.9s 
+➜ forge script --chain sepolia NFTMarketScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv  
+
+[⠊] Compiling...
+[⠔] Compiling 1 files with Solc 0.8.20
+[⠑] Solc 0.8.20 finished in 1.49s
+Compiler run successful!
+Traces:
+  [2204791] NFTMarketScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::startBroadcast(<pk>)
+    │   └─ ← [Return] 
+    ├─ [2153567] → new NFTMarket@0xbba4229cD53442D56E306379E99332687E1fb31f
+    │   └─ ← [Return] 10527 bytes of code
+    ├─ [0] console::log("NFTMarket deployed to:", NFTMarket: [0xbba4229cD53442D56E306379E99332687E1fb31f]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  NFTMarket deployed to: 0xbba4229cD53442D56E306379E99332687E1fb31f
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [2153567] → new NFTMarket@0xbba4229cD53442D56E306379E99332687E1fb31f
+    └─ ← [Return] 10527 bytes of code
+
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 18.910148766 gwei
+
+Estimated total gas used for script: 3106171
+
+Estimated amount required: 0.058738155702634986 ETH
+
+==========================
+
+##### sepolia
+✅  [Success]Hash: 0xaeee3435e8bde06251a1424c7609f5b3cfcac536e95388a27574f8dd589b5b7a
+Contract Address: 0xbba4229cD53442D56E306379E99332687E1fb31f
+Block: 6356694
+Paid: 0.02398914687063458 ETH (2390105 gas * 10.036858996 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.02398914687063458 ETH (2390105 gas * avg 10.036858996 gwei)
+                                                                                                                         
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0xbba4229cD53442D56E306379E99332687E1fb31f` deployed on sepolia
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0xbba4229cD53442D56E306379E99332687E1fb31f.
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0xbba4229cD53442D56E306379E99332687E1fb31f.
+
+Submitting verification for [src/NFTMarket.sol:NFTMarket] 0xbba4229cD53442D56E306379E99332687E1fb31f.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `ayc58d9cqkj7v1uwxzmh4qxrriqgtcj5g8ywzff2y5gjzt29ry`
+        URL: https://sepolia.etherscan.io/address/0xbba4229cd53442d56e306379e99332687e1fb31f
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/broadcast/NFTMarket.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/qiaopengjun/Code/solidity-code/NFTMarketHub/cache/NFTMarket.s.sol/11155111/run-latest.json
+
+
+```
+
+https://sepolia.etherscan.io/address/0xbba4229cd53442d56e306379e99332687e1fb31f#code
+
+![image-20240722225526502](assets/image-20240722225526502.png)
 
 ## 为NFTMarket创建一个The Graph子图
 

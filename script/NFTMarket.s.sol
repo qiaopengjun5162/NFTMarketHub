@@ -16,7 +16,8 @@ contract NFTMarketScript is Script {
     }
 
     function run() public {
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
 
         // 部署 NFTMarket 合约，传入已部署的 mytoken 和 my721token 地址
         nftmarket = new NFTMarket(mytokenAddress, my721tokenAddress);
