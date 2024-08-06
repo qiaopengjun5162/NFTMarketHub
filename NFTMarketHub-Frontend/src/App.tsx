@@ -1,35 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  // const { address, isConnected } = useAccount();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="relative min-h-screen p-4">
+      {/* 
+        mx-auto:用于水平居中元素。mx 表示 margin-left 和 margin-right，auto 使这些边距自动，以实现水平居中对齐。
+        flex:将元素的布局模式设置为 Flexbox。这使得元素可以使用 Flexbox 的布局特性，如对齐、分布等。
+      */}
+      <nav className="container mx-auto px-4 py-8 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Welcome to NFTMarketHub</h1>
+        <div className="absolute top-4 right-4">
+          <ConnectButton />
+        </div>
+      </nav>
+    </div>
+  );
+};
 
-export default App
+export default App;

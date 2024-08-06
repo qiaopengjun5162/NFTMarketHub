@@ -1039,6 +1039,159 @@ https://subgraph.satsuma-prod.com/qiaos-team--238048/nftmarkethub/playground
 
 
 
+```shell
+graph init --studio nftmarkethub
+ ›   Warning: In next major version, this flag will be removed. By default we will deploy to the Graph Studio. Learn more about Sunrise of
+ ›   Decentralized Data https://thegraph.com/blog/unveiling-updated-sunrise-decentralized-data/
+ ›   Warning: In next major version, this flag will be removed. By default we will deploy to the Graph Studio. Learn more about Sunrise of
+ ›   Decentralized Data https://thegraph.com/blog/unveiling-updated-sunrise-decentralized-data/
+ ›   Warning: In next major version, this flag will be removed. By default we will stop initializing a Git repository.
+? Protocol … (node:28795) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Protocol · ethereum
+✔ Subgraph slug · nftmarkethub
+✔ Directory to create the subgraph in · nftmarkethub
+? Ethereum network …
+? Ethereum network …
+? Ethereum network …
+✔ Ethereum network · sepolia
+✔ Contract address · 0xbba4229cD53442D56E306379E99332687E1fb31f
+✔ Fetching ABI from Etherscan
+✖ Failed to fetch Start Block: Failed to fetch contract creation transaction hash
+✔ Do you want to retry? (Y/n) · true
+✔ Fetching Start Block
+✖ Failed to fetch Contract Name: Failed to fetch contract source code
+✔ Do you want to retry? (Y/n) · true
+✖ Failed to fetch Contract Name: Failed to fetch contract source code
+✔ Do you want to retry? (Y/n) · true
+✖ Failed to fetch Contract Name: Failed to fetch contract source code
+✔ Do you want to retry? (Y/n) · true
+✔ Fetching Contract Name
+✔ Start Block · 6356694
+✔ Contract Name · NFTMarket
+✔ Index contract events as entities (Y/n) · true
+  Generate subgraph
+  Write subgraph to directory
+✔ Create subgraph scaffold
+✔ Initialize networks config
+✔ Initialize subgraph repository
+✔ Install dependencies with yarn
+✔ Generate ABI and schema types with yarn codegen
+Add another contract? (y/n):
+Subgraph nftmarkethub created in nftmarkethub
+
+Next steps:
+
+  1. Run `graph auth` to authenticate with your deploy key.
+
+  2. Type `cd nftmarkethub` to enter the subgraph.
+
+  3. Run `yarn deploy` to deploy the subgraph.
+
+Make sure to visit the documentation on https://thegraph.com/docs/ for further information.
+
+NFTMarketHub/thegraph/thegraph on  main [⇡?] via ⬢ v22.1.0 via 🅒 base took 2m 40.6s
+➜
+graph auth --studio c982cd704d2e5525feae40467e1937db
+ ›   Warning: In next major version, this flag will be removed. By default we will deploy to the Graph Studio. Learn more about Sunrise of
+ ›   Decentralized Data https://thegraph.com/blog/unveiling-updated-sunrise-decentralized-data/
+Deploy key set for https://api.studio.thegraph.com/deploy/
+
+NFTMarketHub/thegraph/thegraph on  main [⇡?] via ⬢ v22.1.0 via 🅒 base
+➜
+cd nftmarkethub
+
+NFTMarketHub/thegraph/thegraph/nftmarkethub on  main [⇡?] via ⬢ v22.1.0 via 🅒 base
+➜
+graph codegen && graph build
+  Skip migration: Bump mapping apiVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump mapping apiVersion from 0.0.2 to 0.0.3
+  Skip migration: Bump mapping apiVersion from 0.0.3 to 0.0.4
+  Skip migration: Bump mapping apiVersion from 0.0.4 to 0.0.5
+  Skip migration: Bump mapping apiVersion from 0.0.5 to 0.0.6
+  Skip migration: Bump manifest specVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump manifest specVersion from 0.0.2 to 0.0.4
+✔ Apply migrations
+✔ Load subgraph from subgraph.yaml
+  Load contract ABI from abis/NFTMarket.json
+✔ Load contract ABIs
+  Generate types for contract ABI: NFTMarket (abis/NFTMarket.json)
+  Write types to generated/NFTMarket/NFTMarket.ts
+✔ Generate types for contract ABIs
+✔ Generate types for data source templates
+✔ Load data source template ABIs
+✔ Generate types for data source template ABIs
+✔ Load GraphQL schema from schema.graphql
+  Write types to generated/schema.ts
+✔ Generate types for GraphQL schema
+
+Types generated successfully
+
+  Skip migration: Bump mapping apiVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump mapping apiVersion from 0.0.2 to 0.0.3
+  Skip migration: Bump mapping apiVersion from 0.0.3 to 0.0.4
+  Skip migration: Bump mapping apiVersion from 0.0.4 to 0.0.5
+  Skip migration: Bump mapping apiVersion from 0.0.5 to 0.0.6
+  Skip migration: Bump manifest specVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump manifest specVersion from 0.0.2 to 0.0.4
+✔ Apply migrations
+✔ Load subgraph from subgraph.yaml
+  Compile data source: NFTMarket => build/NFTMarket/NFTMarket.wasm
+✔ Compile subgraph
+  Copy schema file build/schema.graphql
+  Write subgraph file build/NFTMarket/abis/NFTMarket.json
+  Write subgraph manifest build/subgraph.yaml
+✔ Write compiled subgraph to build/
+
+Build completed: build/subgraph.yaml
+
+
+NFTMarketHub/thegraph/thegraph/nftmarkethub on  main [⇡?] via ⬢ v22.1.0 via 🅒 base took 3.0s
+➜
+graph deploy --studio nftmarkethub
+Which version label to use? (e.g. "v0.0.1"): v0.0.1
+  Skip migration: Bump mapping apiVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump mapping apiVersion from 0.0.2 to 0.0.3
+  Skip migration: Bump mapping apiVersion from 0.0.3 to 0.0.4
+  Skip migration: Bump mapping apiVersion from 0.0.4 to 0.0.5
+  Skip migration: Bump mapping apiVersion from 0.0.5 to 0.0.6
+  Skip migration: Bump manifest specVersion from 0.0.1 to 0.0.2
+  Skip migration: Bump manifest specVersion from 0.0.2 to 0.0.4
+✔ Apply migrations
+✔ Load subgraph from subgraph.yaml
+  Compile data source: NFTMarket => build/NFTMarket/NFTMarket.wasm
+✔ Compile subgraph
+  Copy schema file build/schema.graphql
+  Write subgraph file build/NFTMarket/abis/NFTMarket.json
+  Write subgraph manifest build/subgraph.yaml
+✔ Write compiled subgraph to build/
+  Add file to IPFS build/schema.graphql
+                .. QmbcFZtTRP4M1HL2ccYEWJWWgf3pUbddATr1YZfsFsGFtJ
+  Add file to IPFS build/NFTMarket/abis/NFTMarket.json
+                .. QmNdh74x1i5W8vxJ9mB3574ei7m32HMbpiAgfiNkdKfYnC
+  Add file to IPFS build/NFTMarket/NFTMarket.wasm
+                .. QmS9ZKowbSyKdG87qqDLsVq9BKdAY4LAbts5H1yAP3R7r3
+✔ Upload subgraph to IPFS
+
+Build completed: QmebNDDAaXBAfo2abeEajWimikjQL63BnXAmh2JyPn6XTr
+
+Deployed to https://thegraph.com/studio/subgraph/nftmarkethub
+
+Subgraph endpoints:
+Queries (HTTP):     https://api.studio.thegraph.com/query/83263/nftmarkethub/v0.0.1
+
+
+
+
+
+```
+
+
+
+
+
+
+
 ## 参考
 
 - https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/interfaces/IERC2612.sol
