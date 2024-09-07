@@ -33,14 +33,15 @@ jobs:
         with:
           version: nightly
 
-      # Step 2: Install NPM dependencies (including erc-payable-token)
+      # Install npm dependencies, including erc-payable-token
       - name: Install NPM dependencies
         run: |
-          npm install erc-payable-token
+          npm install
 
-      # Step 3: Generate remappings
-      - name: Generate Forge remappings
+      # Generate Forge remappings, including erc-payable-token
+      - name: Generate remappings
         run: |
+          echo "erc-payable-token/=node_modules/erc-payable-token/" >> remappings.txt
           forge remappings > remappings.txt
 
       - name: Run Forge build
