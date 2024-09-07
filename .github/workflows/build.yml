@@ -43,13 +43,10 @@ jobs:
       - name: Install NPM dependencies
         run: npm install
 
-      # 写入 erc-payable-token 的 remapping
-      - name: Add erc-payable-token remapping
-        run: echo "erc-payable-token/=node_modules/erc-payable-token/" >> remappings.txt
-
-      # 生成其他 remappings 并追加到 remappings.txt
-      - name: Generate other remappings
-        run: forge remappings >> remappings.txt
+      - name: Write remappings once
+        run: |
+          echo "erc-payable-token/=node_modules/erc-payable-token/" > remappings.txt
+          forge remappings >> remappings.txt
 
       # 确认 remappings 文件内容
       - name: Check remappings
