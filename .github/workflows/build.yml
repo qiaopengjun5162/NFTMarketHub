@@ -39,9 +39,12 @@ jobs:
         with:
           node-version: "20"
 
-      # 安装 NPM 依赖
-      - name: Install NPM dependencies
-        run: npm install
+      # Install npm dependencies, including erc-payable-token
+      - name: Clean and reinstall npm dependencies
+        run: |
+          rm -rf node_modules
+          npm cache clean --force
+          npm install
 
       - name: Write remappings once
         run: |
@@ -56,6 +59,9 @@ jobs:
       - name: Check erc-payable-token existence
         run: |
           ls -l node_modules/erc-payable-token/contracts/token/
+
+      - name: Verify erc-payable-token directory
+        run: find node_modules/erc-payable-token/contracts/token/ERC1363/
 
       - name: Run Forge build
         run: |
