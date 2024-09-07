@@ -11,17 +11,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import "erc-payable-token/contracts/token/ERC1363/IERC1363Errors.sol";
 
-contract MyERC20Token is
-    ERC20,
-    ERC20Burnable,
-    Ownable,
-    ERC20Permit,
-    ERC20Votes,
-    IERC1363Errors
-{
-    constructor(
-        address initialOwner
-    )
+contract MyERC20Token is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes, IERC1363Errors {
+    constructor(address initialOwner)
         ERC20("MyERC20Token", "MTKERC20")
         Ownable(initialOwner)
         ERC20Permit("MyERC20Token")
@@ -33,25 +24,15 @@ contract MyERC20Token is
 
     // The following functions are overrides required by Solidity.
 
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    ) internal override(ERC20, ERC20Votes) {
+    function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
         super._update(from, to, value);
     }
 
-    function nonces(
-        address owner
-    ) public view override(ERC20Permit, Nonces) returns (uint256) {
+    function nonces(address owner) public view override(ERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
 
-    function transferAndcall(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) public returns (bool) {
+    function transferAndcall(address to, uint256 value, bytes calldata data) public returns (bool) {
         if (!transfer(to, value)) {
             revert ERC1363TransferFailed(to, value);
         }
@@ -61,24 +42,12 @@ contract MyERC20Token is
         return true;
     }
 
-    function _checkOnTransferReceived(
-        address from,
-        address to,
-        uint256 value,
-        bytes memory data
-    ) private {
+    function _checkOnTransferReceived(address from, address to, uint256 value, bytes memory data) private {
         if (to.code.length == 0) {
             revert ERC1363EOAReceiver(to);
         }
 
-        try
-            IERC1363Receiver(to).onTransferReceived(
-                _msgSender(),
-                from,
-                value,
-                data
-            )
-        returns (bytes4 retval) {
+        try IERC1363Receiver(to).onTransferReceived(_msgSender(), from, value, data) returns (bytes4 retval) {
             if (retval != IERC1363Receiver.onTransferReceived.selector) {
                 revert ERC1363InvalidReceiver(to);
             }

@@ -16,14 +16,8 @@ contract MyERC721TokenTest is Test {
 
         vm.startPrank(owner);
 
-        my721token.safeMint(
-            user,
-            "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s"
-        );
-        my721token.safeMint(
-            user2,
-            "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s"
-        );
+        my721token.safeMint(user, "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s");
+        my721token.safeMint(user2, "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s");
 
         vm.stopPrank();
     }
@@ -31,10 +25,7 @@ contract MyERC721TokenTest is Test {
     function testMint() public {
         vm.startPrank(owner);
 
-        my721token.safeMint(
-            user,
-            "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s"
-        );
+        my721token.safeMint(user, "https://ipfs.io/ipfs/QmWbMwzP9P7nkn5YnxC3YRwEjvYgJ9YUu2v9n1wZGK5K8s");
         vm.stopPrank();
         assertEq(my721token.balanceOf(user), 2);
     }

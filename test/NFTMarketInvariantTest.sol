@@ -30,10 +30,7 @@ contract NFTMarketTest is Test {
         vm.label(owner, "ERC20owner");
         mytoken.mint(owner, 100e18);
         // 5. 账户1 owner 在 ERC721 合约上 safeMint NFT
-        mynft.safeMint(
-            owner,
-            "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8"
-        );
+        mynft.safeMint(owner, "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8");
 
         // 6. 账户1 在 ERC721 合约上调用 setApprovalForAll 授权 NFTMarket 合约，参数为 NFTMarket 合约地址和 true
         mynft.setApprovalForAll(address(nftmarket), true);
@@ -62,11 +59,7 @@ contract NFTMarketTest is Test {
         vm.startPrank(buyer);
         // 9. 账户2 在 ERC20 合约上调用 approve 方法授权 NFTMarket 合约使用1个ERC20token，参数为 NFTMarket 合约地址 和数量 1,000,000,000,000,000,000
         mytoken.approve(address(nftmarket), 1e18);
-        assertEq(
-            mytoken.allowance(buyer, address(nftmarket)),
-            1e18,
-            "buyer token allowance is not 1e18"
-        );
+        assertEq(mytoken.allowance(buyer, address(nftmarket)), 1e18, "buyer token allowance is not 1e18");
         // 10. 账户2 在 NFTMarket 合约上调用 buyNFT 购买 tokenId 为 0 的 NFT
         vm.expectEmit(true, true, true, true);
         emit Deal(owner, buyer, 0, 1e18);
@@ -75,6 +68,7 @@ contract NFTMarketTest is Test {
         vm.stopPrank();
     }
     // 不可变测试：测试无论如何买卖，NFTMarket合约中都不可能有 Token 持仓
+
     function invariant_nftmarketTokenBalance() public view {
         assertEq(mynft.balanceOf(address(nftmarket)), 0);
     }

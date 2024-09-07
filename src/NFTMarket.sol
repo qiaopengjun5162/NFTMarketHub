@@ -9,25 +9,17 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/mocks/EIP712Verifier.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract NFTMarket is
-    ERC165,
-    IERC721Receiver,
-    IERC1363Receiver,
-    EIP712Verifier
-{
+contract NFTMarket is ERC165, IERC721Receiver, IERC1363Receiver, EIP712Verifier {
     IERC20 public erc20;
     IERC721 public erc721;
 
     string private constant SIGNING_DOMAIN = "NFT-Market";
     string private constant SIGNATURE_VERSION = "1";
-    bytes32 private constant _LIMIT_ORDER_TYPE_HASH =
-        keccak256(
-            "LimitOrder(address maker,address nft,uint256 tokenId,address payToken,uint256 price,uint256 deadline)"
-        );
+    bytes32 private constant _LIMIT_ORDER_TYPE_HASH = keccak256(
+        "LimitOrder(address maker,address nft,uint256 tokenId,address payToken,uint256 price,uint256 deadline)"
+    );
     bytes32 private constant _WHITE_LIST_TYPE_HASH =
-        keccak256(
-            "whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)"
-        );
+        keccak256("whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)");
 
     struct Order {
         address seller;
@@ -54,18 +46,10 @@ contract NFTMarket is
 
     event Deal(address seller, address buyer, uint256 tokenId, uint256 price);
     event NewOrder(address seller, uint256 tokenId, uint256 price);
-    event PriceChanged(
-        address seller,
-        uint256 tokenId,
-        uint256 previousPrice,
-        uint256 price
-    );
+    event PriceChanged(address seller, uint256 tokenId, uint256 previousPrice, uint256 price);
     event OrderCancelled(address seller, uint256 tokenId);
 
-    constructor(
-        address _erc20,
-        address _erc721
-    ) EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {
+    constructor(address _erc20, address _erc721) EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {
         require(_erc20 != address(0), "zero address");
         require(_erc721 != address(0), "zero address");
         erc20 = IERC20(_erc20);
@@ -98,10 +82,7 @@ contract NFTMarket is
 
         // 如果支付金额超过价格，退回多余的代币
         if (value > price) {
-            require(
-                erc20.transfer(buyer, value - price),
-                "transfer price failed"
-            );
+            require(erc20.transfer(buyer, value - price), "transfer price failed");
         }
 
         // 转移 ERC20 代币
@@ -140,19 +121,14 @@ contract NFTMarket is
         return orderOfId[_tokenId].seller != address(0);
     }
 
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4) {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
+        external
+        returns (bytes4)
+    {
         require(operator == from, " invalid operator");
         require(from != address(0), "zero address");
         require(msg.sender == address(erc721), "invalid sender");
-        require(
-            erc721.ownerOf(tokenId) == address(this),
-            "not owned by this contract"
-        );
+        require(erc721.ownerOf(tokenId) == address(this), "not owned by this contract");
 
         uint256 price = toUint256(data, 0);
         // uint256 price = abi.decode(data, (uint256));
@@ -182,10 +158,7 @@ contract NFTMarket is
     }
 
     // https://stackoverflow.com/questions/63252057/how-to-use-bytestouint-function-in-solidity-the-one-with-assembly
-    function toUint256(
-        bytes memory _bytes,
-        uint256 _start
-    ) public pure returns (uint256) {
+    function toUint256(bytes memory _bytes, uint256 _start) public pure returns (uint256) {
         require(_start + 32 >= _start, "Market: toUint256_overflow");
         require(_bytes.length >= _start + 32, "Market: toUint256_outOfBounds");
         uint256 tempUint;
@@ -219,10 +192,7 @@ contract NFTMarket is
 
     function listNFT(uint256 _tokenId, uint256 _price) external {
         // 检查NFT是否属于调用者
-        require(
-            erc721.ownerOf(_tokenId) == msg.sender,
-            "NFT is not owned by sender"
-        );
+        require(erc721.ownerOf(_tokenId) == msg.sender, "NFT is not owned by sender");
         // 检查 _price 是否大于 0。如果不是，则抛出错误信息 "price is zero" 并中止交易。
         require(_price > 0, "price is zero");
         // 检查 _tokenId 是否已被列出。如果已被列出，则抛出错误信息 "NFT already listed" 并中止交易。
@@ -241,12 +211,11 @@ contract NFTMarket is
         emit NewOrder(msg.sender, _tokenId, _price);
     }
 
-    function onTransferReceived(
-        address,
-        address from,
-        uint256 value,
-        bytes calldata data
-    ) external override returns (bytes4) {
+    function onTransferReceived(address, address from, uint256 value, bytes calldata data)
+        external
+        override
+        returns (bytes4)
+    {
         require(msg.sender == address(erc20), "Invalid token contract");
 
         // uint256 tokenId = abi.decode(data, (uint256));
@@ -256,11 +225,9 @@ contract NFTMarket is
         return this.onTransferReceived.selector;
     }
 
-    function permitBuy(
-        LimitOrder memory order,
-        bytes memory permit2612Signature,
-        bytes calldata whitelistSignature
-    ) external {
+    function permitBuy(LimitOrder memory order, bytes memory permit2612Signature, bytes calldata whitelistSignature)
+        external
+    {
         address seller = orderOfId[order.tokenId].seller;
         address buyer = msg.sender;
         uint256 price = orderOfId[order.tokenId].price;
@@ -268,25 +235,14 @@ contract NFTMarket is
         require(price > 0, "price is zero");
 
         require(block.timestamp <= order.deadline, "permitBuy expired");
-        require(
-            permit2612Signature.length == 65,
-            "signature must be 65 bytes long"
-        );
+        require(permit2612Signature.length == 65, "signature must be 65 bytes long");
 
         // 检查白单签名是否来自于项目方的签署
         // 执行 ERC20 的 permit 进行 授权
         // 执行 ERC20 的转账
         // 执行 NFT  的转账
         // 验证白名单签名，确保调用者是经过授权的白名单用户。
-        verify(
-            whitelistSignature,
-            seller,
-            seller,
-            buyer,
-            order.tokenId,
-            price,
-            order.deadline
-        );
+        verify(whitelistSignature, seller, seller, buyer, order.tokenId, price, order.deadline);
 
         _verifySellListingSignature(order);
 
@@ -304,15 +260,7 @@ contract NFTMarket is
         }
 
         // 使用 IERC20Permit 的 permit 方法进行代币授权。
-        IERC20Permit(address(erc20)).permit(
-            buyer,
-            address(this),
-            price,
-            order.deadline,
-            v,
-            r,
-            s
-        );
+        IERC20Permit(address(erc20)).permit(buyer, address(this), price, order.deadline, v, r, s);
 
         // remove order
         removeOrder(order.tokenId);
@@ -335,9 +283,7 @@ contract NFTMarket is
         bytes32 digest = _hashTypedDataV4(
             keccak256(
                 abi.encode(
-                    keccak256(
-                        "whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)"
-                    ),
+                    keccak256("whitelist(address seller,address buyer,uint256 tokenId,uint256 price,uint256 deadline)"),
                     seller,
                     _buyer,
                     _tokenId,
@@ -374,9 +320,6 @@ contract NFTMarket is
         orderMatched[digest] = true;
         // 验证签名是否来自于指定的签署者。
         address recoveredSigner = ECDSA.recover(digest, order.signature);
-        require(
-            recoveredSigner == order.seller,
-            "Invalid verifySellListingSignature"
-        );
+        require(recoveredSigner == order.seller, "Invalid verifySellListingSignature");
     }
 }

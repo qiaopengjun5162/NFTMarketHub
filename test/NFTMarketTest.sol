@@ -30,27 +30,16 @@ contract NFTMarketTest is Test {
         vm.label(owner, "ERC20owner");
         mytoken.mint(owner, 100e18);
         // 5. 账户1 owner 在 ERC721 合约上 safeMint NFT
-        mynft.safeMint(
-            owner,
-            "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8"
-        );
+        mynft.safeMint(owner, "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8");
 
         vm.stopPrank();
     }
 
     function testTokenBalance() public view {
-        assertEq(
-            mytoken.balanceOf(owner),
-            100e18,
-            "owner balance is not 100e18"
-        );
+        assertEq(mytoken.balanceOf(owner), 100e18, "owner balance is not 100e18");
 
         assertEq(mytoken.balanceOf(buyer), 0, "buyer balance is not 0");
-        assertEq(
-            mytoken.balanceOf(address(nftmarket)),
-            0,
-            "market balance is not 0"
-        );
+        assertEq(mytoken.balanceOf(address(nftmarket)), 0, "market balance is not 0");
     }
 
     function testNFTBalance() public view {
@@ -133,11 +122,7 @@ contract NFTMarketTest is Test {
 
         // 授权并上架
         mynft.setApprovalForAll(address(nftmarket), true);
-        assertEq(
-            mynft.isApprovedForAll(owner, address(nftmarket)),
-            true,
-            "owner nft is not approved for all"
-        );
+        assertEq(mynft.isApprovedForAll(owner, address(nftmarket)), true, "owner nft is not approved for all");
         // NFT的拥有者才有权限上架
         nftmarket.listNFT(0, 1e18);
         assertEq(nftmarket.isListed(0), true, "nft market is not listed");
@@ -146,11 +131,7 @@ contract NFTMarketTest is Test {
         // 购买
         vm.startPrank(buyer);
         mytoken.approve(address(nftmarket), 1e18);
-        assertEq(
-            mytoken.allowance(buyer, address(nftmarket)),
-            1e18,
-            "buyer token allowance is not 1e18"
-        );
+        assertEq(mytoken.allowance(buyer, address(nftmarket)), 1e18, "buyer token allowance is not 1e18");
         //
         nftmarket.buyNFT(0);
         assertEq(mynft.ownerOf(0), buyer, "nft owner is not buyer");
@@ -175,10 +156,7 @@ contract NFTMarketTest is Test {
         // https://stackoverflow.com/questions/63252057/how-to-use-bytestouint-function-in-solidity-the-one-with-assembly
         // 上架
         mynft.safeTransferFrom(
-            owner,
-            address(nftmarket),
-            0,
-            "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
+            owner, address(nftmarket), 0, "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
         );
         assertEq(nftmarket.isListed(0), true);
         vm.stopPrank();
@@ -198,22 +176,15 @@ contract NFTMarketTest is Test {
         assertEq(mynft.balanceOf(owner), 1, "owner nft balance is not 1");
         assertEq(mynft.ownerOf(0), owner, "owner nft is not owner");
         // safeMint NFT
-        mynft.safeMint(
-            owner,
-            "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8"
-        );
+        mynft.safeMint(owner, "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8");
         assertEq(mynft.balanceOf(owner), 2, "owner nft balance is not 2");
         assertEq(mynft.ownerOf(1), owner, "owner nft is not owner");
 
         // https://stackoverflow.com/questions/63252057/how-to-use-bytestouint-function-in-solidity-the-one-with-assembly
         // 上架
-        mynft.safeTransferFrom(
-            owner,
-            address(nftmarket),
-            1,
-            abi.encode(1e18)
-            // "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
-        );
+        mynft.safeTransferFrom(owner, address(nftmarket), 1, abi.encode(1e18));
+        // "0x0000000000000000000000000000000000000000000000000001c6bf52634000"
+
         assertEq(nftmarket.isListed(1), true);
         // 给买家转账 10e18
         mytoken.transfer(buyer, 10e18);
@@ -229,9 +200,10 @@ contract NFTMarketTest is Test {
             // 500000000000000,
             1e18,
             abi.encode(1)
-
-            // "0x0000000000000000000000000000000000000000000000000000000000000001"
         );
+
+        // "0x0000000000000000000000000000000000000000000000000000000000000001"
+
         assertEq(mynft.ownerOf(1), buyer, "nft owner is not buyer");
         vm.stopPrank();
     }
@@ -251,9 +223,7 @@ contract NFTMarketTest is Test {
     // function testFuzzRandomAddressBuyNFT(address newbuyer) public {
     function testFuzzRandomAddressBuyNFT() public {
         // 生成随机用户地址
-        address newbuyer = vm.addr(
-            uint256(keccak256(abi.encodePacked("randomUser", block.timestamp)))
-        );
+        address newbuyer = vm.addr(uint256(keccak256(abi.encodePacked("randomUser", block.timestamp))));
 
         vm.assume(newbuyer != address(0) && newbuyer != owner);
 
@@ -266,11 +236,7 @@ contract NFTMarketTest is Test {
         assertEq(mytoken.balanceOf(newbuyer), 10e18);
         // 授权并上架
         mynft.setApprovalForAll(address(nftmarket), true);
-        assertEq(
-            mynft.isApprovedForAll(owner, address(nftmarket)),
-            true,
-            "owner nft is not approved for all"
-        );
+        assertEq(mynft.isApprovedForAll(owner, address(nftmarket)), true, "owner nft is not approved for all");
         // NFT的拥有者才有权限上架
         nftmarket.listNFT(0, 1e18);
         assertEq(nftmarket.isListed(0), true, "nft market is not listed");
@@ -279,11 +245,7 @@ contract NFTMarketTest is Test {
         // 购买
         vm.startPrank(newbuyer);
         mytoken.approve(address(nftmarket), 1e18);
-        assertEq(
-            mytoken.allowance(newbuyer, address(nftmarket)),
-            1e18,
-            "buyer token allowance is not 1e18"
-        );
+        assertEq(mytoken.allowance(newbuyer, address(nftmarket)), 1e18, "buyer token allowance is not 1e18");
         vm.expectEmit(true, true, true, true);
         emit Deal(owner, newbuyer, 0, 1e18);
 

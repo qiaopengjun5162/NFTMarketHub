@@ -49,10 +49,7 @@ contract NFTMarketTest is Test {
         vm.label(owner, "ERC20owner");
         mytoken.mint(owner, 100e18);
         // 5. 账户1 owner 在 ERC721 合约上 safeMint NFT
-        mynft.safeMint(
-            owner,
-            "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8"
-        );
+        mynft.safeMint(owner, "https://ipfs.io/ipfs/QmSsYRx3LpDAb1GZQm7zZ1AuHZjfbPkD6J7s9r41xu1mf8");
 
         vm.stopPrank();
     }
@@ -114,13 +111,8 @@ contract NFTMarketTest is Test {
     }
 
     function _getEIP2612Signature() private view returns (bytes memory) {
-        SigUtils.Permit memory permit = SigUtils.Permit({
-            owner: buyer,
-            spender: address(nftmarket),
-            value: price,
-            nonce: nonce,
-            deadline: deadline
-        });
+        SigUtils.Permit memory permit =
+            SigUtils.Permit({owner: buyer, spender: address(nftmarket), value: price, nonce: nonce, deadline: deadline});
 
         bytes32 digest = mytoken_sigUtils.getTypedDataHash(permit);
 
@@ -130,45 +122,29 @@ contract NFTMarketTest is Test {
     }
 
     function _getWhiteListSignature() private view returns (bytes memory) {
-        SigUtils.PermitBuy memory PermitBuy = SigUtils.PermitBuy({
-            seller: owner,
-            buyer: buyer,
-            tokenId: tokenId,
-            price: price,
-            deadline: deadline
-        });
+        SigUtils.PermitBuy memory PermitBuy =
+            SigUtils.PermitBuy({seller: owner, buyer: buyer, tokenId: tokenId, price: price, deadline: deadline});
 
-        bytes32 digest_whitelist = sigUtils.getPermitBuyTypedDataHash(
-            PermitBuy
-        );
+        bytes32 digest_whitelist = sigUtils.getPermitBuyTypedDataHash(PermitBuy);
 
-        (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(
-            ownerPrivateKey,
-            digest_whitelist
-        );
+        (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(ownerPrivateKey, digest_whitelist);
         bytes memory whitelistSignature = abi.encodePacked(r1, s1, v1);
         return whitelistSignature;
     }
 
     function _getSellListingSignature() private view returns (bytes memory) {
-        SigUtils.PermitLimitOrder memory PermitLimitOrder = SigUtils
-            .PermitLimitOrder({
-                maker: address(nftmarket),
-                nft: address(mynft),
-                tokenId: tokenId,
-                payToken: address(mytoken),
-                price: price,
-                deadline: deadline
-            });
+        SigUtils.PermitLimitOrder memory PermitLimitOrder = SigUtils.PermitLimitOrder({
+            maker: address(nftmarket),
+            nft: address(mynft),
+            tokenId: tokenId,
+            payToken: address(mytoken),
+            price: price,
+            deadline: deadline
+        });
 
-        bytes32 digest_list = sigUtils.getPermitLimitOrderTypedDataHash(
-            PermitLimitOrder
-        );
+        bytes32 digest_list = sigUtils.getPermitLimitOrderTypedDataHash(PermitLimitOrder);
 
-        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(
-            ownerPrivateKey,
-            digest_list
-        );
+        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(ownerPrivateKey, digest_list);
         bytes memory sellListingSignature = abi.encodePacked(r2, s2, v2);
         return sellListingSignature;
     }

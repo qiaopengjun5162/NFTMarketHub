@@ -51,9 +51,11 @@ contract MyERC20TokenTest is Test {
     function testName() public view {
         assertEq(mytoken.name(), "MyERC20Token");
     }
+
     function testSymbol() public view {
         assertEq(mytoken.symbol(), "MTKERC20");
     }
+
     function testDecimals() public view {
         assertEq(mytoken.decimals(), 18);
     }
@@ -81,27 +83,14 @@ contract MyERC20TokenTest is Test {
     }
 
     function test_Permit() public {
-        SigUtils.Permit memory permit = SigUtils.Permit({
-            owner: owner,
-            spender: spender,
-            value: 1e18,
-            nonce: 0,
-            deadline: 1 days
-        });
+        SigUtils.Permit memory permit =
+            SigUtils.Permit({owner: owner, spender: spender, value: 1e18, nonce: 0, deadline: 1 days});
 
         bytes32 digest = sigUtils.getTypedDataHash(permit);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPrivateKey, digest);
 
-        mytoken.permit(
-            permit.owner,
-            permit.spender,
-            permit.value,
-            permit.deadline,
-            v,
-            r,
-            s
-        );
+        mytoken.permit(permit.owner, permit.spender, permit.value, permit.deadline, v, r, s);
 
         assertEq(mytoken.allowance(owner, spender), 1e18);
         assertEq(mytoken.nonces(owner), 1);
@@ -124,14 +113,6 @@ contract MyERC20TokenTest is Test {
 
         // vm.expectRevert("PERMIT_DEADLINE_EXPIRED");
         vm.expectRevert("ERC2612ExpiredSignature");
-        mytoken.permit(
-            permit.owner,
-            permit.spender,
-            permit.value,
-            permit.deadline,
-            v,
-            r,
-            s
-        );
+        mytoken.permit(permit.owner, permit.spender, permit.value, permit.deadline, v, r, s);
     }
 }
