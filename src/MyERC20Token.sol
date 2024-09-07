@@ -9,9 +9,11 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
-import "erc-payable-token/contracts/token/ERC1363/IERC1363Errors.sol";
 
-contract MyERC20Token is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes, IERC1363Errors {
+// import "erc-payable-token/contracts/token/ERC1363/IERC1363Errors.sol";
+import {ERC1363Utils} from "erc-payable-token/contracts/token/ERC1363/ERC1363Utils.sol";
+
+contract MyERC20Token is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes {
     constructor(address initialOwner)
         ERC20("MyERC20Token", "MTKERC20")
         Ownable(initialOwner)
@@ -34,7 +36,7 @@ contract MyERC20Token is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes,
 
     function transferAndcall(address to, uint256 value, bytes calldata data) public returns (bool) {
         if (!transfer(to, value)) {
-            revert ERC1363TransferFailed(to, value);
+            revert ERC1363Utils.ERC1363TransferFailed(to, value);
         }
 
         _checkOnTransferReceived(msg.sender, to, value, data);
@@ -44,16 +46,16 @@ contract MyERC20Token is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes,
 
     function _checkOnTransferReceived(address from, address to, uint256 value, bytes memory data) private {
         if (to.code.length == 0) {
-            revert ERC1363EOAReceiver(to);
+            revert ERC1363Utils.ERC1363EOAReceiver(to);
         }
 
         try IERC1363Receiver(to).onTransferReceived(_msgSender(), from, value, data) returns (bytes4 retval) {
             if (retval != IERC1363Receiver.onTransferReceived.selector) {
-                revert ERC1363InvalidReceiver(to);
+                revert ERC1363Utils.ERC1363InvalidReceiver(to);
             }
         } catch (bytes memory reason) {
             if (reason.length == 0) {
-                revert ERC1363InvalidReceiver(to);
+                revert ERC1363Utils.ERC1363InvalidReceiver(to);
             } else {
                 assembly {
                     revert(add(32, reason), mload(reason))

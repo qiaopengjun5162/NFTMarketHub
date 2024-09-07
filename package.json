@@ -1,5 +1,5 @@
 {
 	"dependencies": {
-		"erc-payable-token": "^6.0.0"
+		"erc-payable-token": "^6.2.0"
 	}
 }
