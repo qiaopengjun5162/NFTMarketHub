@@ -33,33 +33,27 @@ jobs:
         with:
           version: nightly
 
-      # 安装 Node.js 和 npm
+      # 设置 Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # 选择你所需要的 Node.js 版本
+          node-version: "20"
 
-      # Check Node.js and NPM version
-      - name: Check Node.js and NPM version
-        run: |
-          node -v
-          npm -v
-
-      # Install npm dependencies, including erc-payable-token
+      # 安装 NPM 依赖
       - name: Install NPM dependencies
-        run: |
-          npm install
+        run: npm install
 
-      # Generate Forge remappings, including erc-payable-token
-      - name: Generate remappings
-        run: |
-          echo "erc-payable-token/=node_modules/erc-payable-token/" >> remappings.txt
-          forge remappings > remappings.txt
+      # 写入 erc-payable-token 的 remapping
+      - name: Add erc-payable-token remapping
+        run: echo "erc-payable-token/=node_modules/erc-payable-token/" >> remappings.txt
 
-      # Debugging: Show remappings file content
-      - name: Debug remappings
-        run: |
-          cat remappings.txt
+      # 生成其他 remappings 并追加到 remappings.txt
+      - name: Generate other remappings
+        run: forge remappings >> remappings.txt
+
+      # 确认 remappings 文件内容
+      - name: Check remappings
+        run: cat remappings.txt
 
       # Debugging: Check if the installed package exists
       - name: Check erc-payable-token existence
