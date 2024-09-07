@@ -37,6 +37,10 @@ jobs:
         run: |
           npm install
 
+      - name: Run Forge remappings
+        run: |
+          forge remappings > remappings.txt
+
       - name: Run Forge build
         run: |
           forge --version
